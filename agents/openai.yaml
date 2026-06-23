@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upgrade CLI Fleet"
+  short_description: "Plan safe upgrades for every CLI"
+  default_prompt: "Use $upgrade-cli-fleet to plan safe upgrades for all visible CLI tools."
