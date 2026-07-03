@@ -20,6 +20,11 @@ PATH inventory -> ownership resolution -> trusted plan -> safety gate -> apply
 - Block shell wrappers such as `sh -c`, `bash -c`, `zsh -c`, `/usr/bin/env sh`, `/usr/bin/env bash`, and `/usr/bin/env zsh`.
 - Block `eval`, `source`, curl-to-shell, and installer scripts.
 - Treat `--yes` or equivalent confirmation flags as valid only for trusted low-risk actions.
+- Check the resolved binary's owner and writability before recommending a self-update: if the path is root-owned or not user-writable, the self-update needs `sudo` and is blocked.
+
+## Tool-Internal Fetch Is Not curl-to-shell
+
+The curl-to-shell block forbids YOU from constructing `curl … | sh` argv. It does NOT forbid running a tool's OWN native update subcommand that fetches internally. `codex update`, `kilo upgrade`, and `opencode upgrade` each download their update via curl (they print "Using method: curl") — this is the tool's own implementation, equivalent to `brew upgrade` running build scripts. The argv `["codex", "update"]` is an accepted recipe shape. Only when you would have to write the `curl … | sh` yourself is it blocked.
 
 ## Blocked Recipe Shapes
 
@@ -48,11 +53,15 @@ Accepted executable actions must be explicit argv arrays:
 ["uv", "tool", "upgrade", "ruff"]
 ```
 
+A native update subcommand whose internals fetch via curl (e.g., `["codex", "update"]`) is also accepted — see "Tool-Internal Fetch Is Not curl-to-shell" above.
+
+Every token must be literal. argv arrays bypass the shell, so `~`, `$HOME`, and other env refs are NOT expanded at exec time — resolve them to absolute paths (e.g., `/Users/<user>/.local`, not `~/.local`) before forming the argv.
+
 ## Apply Rules
 
 Before applying:
 
-1. Re-check that the program named in `argv[0]` resolves to the same trusted path used during planning.
+1. Re-check that the program named in `argv[0]` resolves to the same trusted path used during planning. The name on PATH may differ from the canonical name (e.g., cursor-agent installed as `agent`).
 2. Re-check that the action is still low-risk, non-sudo, and non-shell.
 3. Show the exact argv list to the user.
 4. Ask for approval unless the user has already approved the exact final action set.

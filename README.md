@@ -9,6 +9,7 @@
 - `references/manager-catalog.md`: trusted managers, self-updaters, and review-only sources.
 - `references/llm-enrichment.md`: rules for using web or LLM context without overriding local evidence.
 - `references/plan-format.md`: structured upgrade plan and audit output format.
+- `references/classification-guide.md`: four-bucket classification (upgrade / skip / no-upgrade / cannot) with decision signals and field notes.
 - `agents/openai.yaml`: UI metadata for the skill.
 
 ## Validation

@@ -12,13 +12,13 @@ Plan CLI upgrades by owner, not by guessed command-specific update commands. Tre
 ## Workflow
 
 1. Inventory the active `PATH` without executing discovered binaries.
-   Record command name, path, canonical path, symlink status, duplicates, and PATH precedence. Do not probe unknown commands with `--help`, `--version`, or self-update flags.
+   Record command name, path, canonical path, symlink status, duplicates, and PATH precedence. Enumerate every npm global prefix (nvm node versions, `~/.npm-global`, `~/.local/lib/node_modules`), not just the active npm. Do not probe unknown commands with `--help`, `--version`, or self-update flags.
 
 2. Resolve ownership from local evidence.
-   Prefer package-manager metadata and install paths over web identity. Safe manager metadata commands are acceptable when they query the manager itself, not arbitrary discovered binaries.
+   Prefer package-manager metadata and install paths over web identity. Resolve the actual argv[0] name on PATH (it may differ from the canonical name, e.g., cursor-agent installed as `agent`). Check the binary's owner and writability — root-owned or non-writable paths need `sudo` and are blocked. Safe manager metadata commands are acceptable when they query the manager itself, not arbitrary discovered binaries.
 
 3. Classify each command.
-   Use `primary`, `dependency`, `system`, `review`, or `unknown`. Hide dependency/system noise in summaries, but preserve it in audit details when the user asks for complete inventory.
+   Use `primary`, `dependency`, `system`, `review`, or `unknown`. Bucket each as upgrade / skip / no-upgrade-needed / cannot-upgrade per `references/classification-guide.md`. Hide dependency/system noise in summaries, but preserve it in audit details when the user asks for complete inventory.
 
 4. Build an upgrade plan.
    Prefer manager-level upgrades over command-specific self-updaters. Put ambiguous, shadowed, conflicting, sudo-requiring, shell-based, or high-risk commands into review instead of inventing recipes.
@@ -33,6 +33,7 @@ Plan CLI upgrades by owner, not by guessed command-specific update commands. Tre
 
 - Read `references/safety-model.md` before proposing or applying any executable action.
 - Read `references/manager-catalog.md` when resolving owners, choosing upgrade scope, or deciding whether a manager is trusted, skipped, or review-only.
+- Read `references/classification-guide.md` when bucketing a discovered CLI into upgrade / skip / no-upgrade-needed / cannot-upgrade, or when deciding what to leave out of a plan.
 - Read `references/llm-enrichment.md` when using web search, an LLM, or third-party docs to classify unknown commands or propose recipes.
 - Read `references/plan-format.md` when the user asks for a structured plan, JSON-like output, dry-run report, or audit trail.
 
