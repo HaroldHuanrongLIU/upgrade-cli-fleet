@@ -26,8 +26,14 @@ Plan CLI upgrades by owner, not by guessed command-specific update commands. Tre
 5. Safety-gate every action.
    Accept only low-risk argv arrays. Reject shell strings, shell wrappers, `sudo`, `eval`, `source`, and recipes that depend on project context. Re-check the active command path before applying.
 
-6. Present before applying.
-   Show trusted actions, dry-run commands, skipped commands, review items, conflicts, unknowns, and evidence. Execute upgrades only after explicit user approval of the final plan.
+6. Collect current and target versions for every planned upgrade.
+   Before asking for approval, run safe manager metadata commands (`brew outdated`, `npm outdated -g`, etc.) and bounded self-updater check commands to record the current version and the version the action will install. Do not probe unknown binaries with `--version`; use the manager or the tool's own bounded update subcommand output.
+
+7. Present before applying.
+   Show a table of upgradable CLIs with command name, current version, target version, owner, argv action, risk, and evidence. Also show dry-run commands, skipped commands, review items, conflicts, unknowns, and evidence. Execute upgrades only after explicit user approval of the final plan.
+
+8. Provide a post-apply summary.
+   After upgrades finish, list what was upgraded (with before/after versions), what was already current, what was skipped or blocked, and any errors. Let the user audit the outcome without re-running the inventory.
 
 ## Reference Routing
 

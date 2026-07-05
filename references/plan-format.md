@@ -21,6 +21,8 @@ Each trusted action should include:
 | --- | --- |
 | `scope` | manager, package, or command being upgraded |
 | `owner` | resolved manager and package, if known |
+| `current_version` | version currently installed locally |
+| `target_version` | version the action will install (from manager metadata or the tool's own update check) |
 | `argv` | exact argv array |
 | `risk` | usually `low`; otherwise do not auto-apply |
 | `evidence` | local path/package evidence |
@@ -51,3 +53,19 @@ Review-only commands will not be modified.
 ```
 
 Ask for approval only after the final action list is concrete.
+
+## Post-Apply Summary
+
+After running the approved actions, report a summary list:
+
+| Section | Contents |
+| --- | --- |
+| **Upgraded** | command, owner, previous version → new version, argv used |
+| **Already current** | command, owner, current version |
+| **Skipped** | command, reason (dependency, system, review-only source, user decision) |
+| **Blocked / Cannot upgrade** | command, reason (sudo required, curl-to-shell only, platform unsupported, error) |
+| **Manual execution required** | command, reason (interactive TUI that cannot be confirmed in non-interactive Bash; user must run the bounded subcommand in their own terminal) |
+| **Errors** | command, exit code, truncated error message |
+| **Remaining conflicts** | shadowed commands or duplicates that still need user decision |
+
+Keep the summary concise enough to scan, but include enough version and evidence detail that the user can audit the outcome without re-running the inventory.

@@ -43,6 +43,8 @@ Example: `rclone` at `/usr/local/bin/rclone` (`root:wheel` — root-owned; the e
 
 **D② — only curl-to-shell / installer / eval / source, no native update.** The tool's docs say "rerun `curl … | sh`" and it has NO `<cmd> update` subcommand. Constructing that argv is blocked.
 
+**D③ — interactive TUI confirmation required and cannot be satisfied.** The bounded `<cmd> update/upgrade` exists, but it renders an interactive menu (e.g., "Install update now" vs "Continue with current version") that requires a real terminal. Agent-run Bash is non-interactive, and the tool has no working `--yes` / `--non-interactive` flag. Classify as manual-only: tell the user to run the bounded subcommand in their own terminal. Do not pipe fake input to the TUI.
+
 **Critical distinction — a tool's OWN native update that internally curls is ALLOWED.** `codex update`, `kilo upgrade`, and `opencode upgrade` each report "Using method: curl" internally. That is the tool's own implementation (like `brew upgrade` running build scripts), NOT you constructing a curl-to-shell argv. The clean argv `["codex", "update"]` passes the safety model and belongs in Bucket A. Only when YOU would have to write the `curl … | sh` is it D②.
 
 Observed: no D② instance — every CLI that documented curl-to-shell also exposed a native `<cmd> update`.
