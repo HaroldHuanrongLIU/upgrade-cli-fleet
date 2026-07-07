@@ -54,6 +54,21 @@ Review-only commands will not be modified.
 
 Ask for approval only after the final action list is concrete.
 
+## Batch Approval
+
+When the plan contains multiple Bucket A actions, present them as **one batch** and ask once:
+
+```text
+I will run these argv actions:
+1. ["brew", "upgrade", "ffmpeg", "fzf", "neovim"]
+2. ["brew", "upgrade", "--cask", "codexbar"]
+3. ["npm", "update", "-g", "@qwen-code/qwen-code"]
+
+Skipped, already-current, review-only, and manual-only commands will not be modified.
+```
+
+Do not ask for approval per action. The user responds to the whole batch.
+
 ## Post-Apply Summary
 
 After running the approved actions, report a summary list:

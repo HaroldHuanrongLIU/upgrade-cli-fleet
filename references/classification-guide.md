@@ -13,6 +13,19 @@ Use this to bucket any discovered CLI into one of four states before planning an
 
 `review`/`unknown` is the **pre-resolution** state. After investigation the CLI lands in A, B, C, or D.
 
+## Default Classification Rules
+
+To keep the skill plug-and-play, apply these defaults without asking the user:
+
+| Situation | Default bucket | Do not ask unless... |
+|---|---|---|
+| Trusted manager owns it (Homebrew, npm global, pipx, uv tool, mise, rustup) and a safe argv exists | A | the action would require `sudo` or a shell wrapper |
+| App-bundle shim, language runtime, dependency helper, or review-only source | B | the user explicitly asks to audit it |
+| Manager or self-updater check reports "already latest" | C | — |
+| Root-owned / non-user-writable path, or only curl-to-shell/eval/source installer exists | D | — |
+| Standalone self-updater with unverified non-interactive flag, or known interactive TUI | D③ / manual-only | the user verifies a working `--yes` or `--non-interactive` flag |
+| Ambiguous ownership, shadowed PATH entry, or conflict | review | — |
+
 ## Bucket A — Upgrade
 
 Recipes live in `manager-catalog.md`. Promote a CLI here only when a trusted manager owns it (Homebrew/npm-global/pipx/uv-tool/mise/rustup) or it has a bounded self-update subcommand AND local ownership is resolved.

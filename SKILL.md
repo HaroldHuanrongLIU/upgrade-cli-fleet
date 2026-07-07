@@ -30,10 +30,19 @@ Plan CLI upgrades by owner, not by guessed command-specific update commands. Tre
    Before asking for approval, run safe manager metadata commands (`brew outdated`, `npm outdated -g`, etc.) and bounded self-updater check commands to record the current version and the version the action will install. Do not probe unknown binaries with `--version`; use the manager or the tool's own bounded update subcommand output.
 
 7. Present before applying.
-   Show a table of upgradable CLIs with command name, current version, target version, owner, argv action, risk, and evidence. Also show dry-run commands, skipped commands, review items, conflicts, unknowns, and evidence. Execute upgrades only after explicit user approval of the final plan.
+   Build one consolidated plan. Put every Bucket A action into a single batch approval table with command name, current version, target version, owner, argv action, risk, and evidence. Summarize skipped, already-current, manual-only, and review items; do not ask about each one individually. Execute upgrades only after explicit user approval of the final action set.
 
 8. Provide a post-apply summary.
    After upgrades finish, list what was upgraded (with before/after versions), what was already current, what was skipped or blocked, and any errors. Let the user audit the outcome without re-running the inventory.
+
+## Defaults & Batching
+
+Apply these defaults to reduce back-and-forth without weakening the safety model:
+
+- **Skip by default.** Do not ask about system paths, app-bundle shims, language runtimes, dependency/non-CLI helpers, or review-only sources (conda, MacPorts, Nix, SDKMAN!, `~/go/bin`, `~/.cargo/bin`, pnpm standalone). Summarize them in the plan.
+- **Manual-only by default.** Standalone self-updaters with unverified non-interactive flags, or known interactive TUIs, go into the manual-only table. List the bounded argv so the user can run it in their own terminal, but do not execute it automatically.
+- **Batch approval.** Present every Bucket A action in one table and ask for one final approval. Do not ask per command.
+- **Review bucket is narrow.** Only ambiguous ownership, PATH conflicts/shadowing, root-owned paths that need sudo, or shell-based recipes require a user decision.
 
 ## Reference Routing
 
